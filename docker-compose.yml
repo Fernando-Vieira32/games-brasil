@@ -1,0 +1,32 @@
+services:
+  games-brasil:
+    build: .
+    command: bash -c "bundle check || bundle install && rm -f tmp/pids/server.pid && bin/dev"
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db      
+    environment:
+      RAILS_ENV: development
+      POSTGRES_HOST: db
+      POSTGRES_DB_NAME: games_brasil_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+  db:
+    image: postgres:16.6-alpine
+    container_name: games-brasil-postgres-16.6
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${DB_PORT:-5432}:5432"
+volumes:
+  postgres_data:
+  bundle_cache:
